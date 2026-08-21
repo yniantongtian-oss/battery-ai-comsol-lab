@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: "Battery AI + COMSOL Lab"
+message: "If you use this repository in research, please cite the repository release and the upstream model/data sources used by your configuration."
+type: software
+version: 0.1.0
+date-released: 2026-08-21
+license: MIT
+repository-code: "https://github.com/yniantongtian-oss/battery-ai-comsol-lab"

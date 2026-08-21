@@ -1,0 +1,17 @@
+project_id: battery-ai-comsol-lab
+chemistry: graphite_NMC
+cell_format: research_reference
+engine: pybamm
+model: DFN
+thermal: lumped
+parameter_set: OKane2022
+protocol_id: ageing_reference
+c_rate: 1.0
+ambient_temperature_K: 298.15
+initial_soc: 1.0
+max_duration_s: 3600
+output_points: 300
+model_options:
+  SEI: solvent-diffusion limited
+  lithium plating: partially reversible
+notes: "Research ageing configuration; validate protocol and parameters before experimental comparison."

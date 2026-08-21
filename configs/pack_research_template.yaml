@@ -1,0 +1,12 @@
+project_id: battery-ai-comsol-lab
+cell_config: lgm50_electrothermal_baseline.yaml
+series_cells: 12
+parallel_cells: 2
+initial_soc_mean: 0.9
+initial_soc_std: 0.01
+capacity_std_fraction: 0.02
+contact_resistance_mean_ohm: 0.001
+thermal_environment:
+  ambient_temperature_K: 298.15
+  heat_transfer_coefficient_W_m2K: 10.0
+notes: "Template only; pack topology and parameters require system-specific validation."

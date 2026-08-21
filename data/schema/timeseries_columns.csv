@@ -1,0 +1,10 @@
+column,unit,required,description
+time_s,s,true,elapsed time
+current_A,A,true,applied/measured current
+voltage_V,V,true,terminal voltage
+temperature_K,K,true,cell temperature or NaN if unavailable
+cell_id,,false,cell identifier
+experiment_id,,false,experiment identifier
+cycle_index,,false,cycle number
+soc_reference,,false,reference state of charge
+soh_reference,,false,reference state of health

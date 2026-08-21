@@ -1,0 +1,4 @@
+base_config: lgm50_electrothermal_baseline.yaml
+c_rates: [0.5, 1.0, 2.0]
+ambient_temperatures_K: [283.15, 298.15, 313.15]
+output_root: runs/lgm50_crate_temperature_sweep

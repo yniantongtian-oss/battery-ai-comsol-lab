@@ -1,0 +1,10 @@
+experiment_id: 20260821_CELL001_CAPACITY_R01
+cell_id: CELL001
+chemistry: graphite_NMC
+cell_format: cylindrical
+protocol: capacity_reference
+temperature_K: 298.15
+operator: null
+equipment: []
+notes: ""
+raw_files: []

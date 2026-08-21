@@ -1,0 +1,14 @@
+project_id: battery-ai-comsol-lab
+chemistry: LFP_graphite
+cell_format: generic
+engine: pybamm
+model: DFN
+thermal: isothermal
+parameter_set: Prada2013
+protocol_id: constant_current_discharge
+c_rate: 1.0
+ambient_temperature_K: 298.15
+initial_soc: 1.0
+max_duration_s: 7200
+output_points: 500
+notes: "Electrochemical LFP reference. Prada2013 is intentionally kept isothermal."

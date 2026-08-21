@@ -1,0 +1,14 @@
+project_id: battery-ai-comsol-lab
+chemistry: graphite_NMC811
+cell_format: cylindrical_21700_reference
+engine: pybamm
+model: DFN
+thermal: lumped
+parameter_set: ORegan2022
+protocol_id: constant_current_discharge
+c_rate: 1.0
+ambient_temperature_K: 298.15
+initial_soc: 1.0
+max_duration_s: 5400
+output_points: 500
+notes: "Electro-thermal reference using temperature-dependent ORegan2022 parameters."

@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 REQUIRED_TIMESERIES_COLUMNS = ("time_s", "current_A", "voltage_V", "temperature_K")
 
 

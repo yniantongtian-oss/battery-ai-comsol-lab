@@ -10,16 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-      - name: Install
-        run: python -m pip install -e .[dev]
+      - name: Install test stack
+        run: python -m pip install -e ".[dev,pybamm]"
       - name: Lint
         run: ruff check src tests scripts
+      - name: Repository checks
+        run: python scripts/check_repository.py
+      - name: CLI validation
+        run: battery-lab validate-configs configs
       - name: Tests
         run: pytest
+      - name: Short real PyBaMM solve
+        run: >-
+          battery-lab simulate
+          --config configs/lfp_graphite_baseline.yaml
+          --out runs/ci-lfp-smoke

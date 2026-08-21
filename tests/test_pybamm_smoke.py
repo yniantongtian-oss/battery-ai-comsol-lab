@@ -1,8 +1,9 @@
+import importlib
+
 import pytest
 
 pybamm = pytest.importorskip("pybamm")
-
-from battery_lab.pybamm_runner import build_model
+build_model = importlib.import_module("battery_lab.pybamm_runner").build_model
 
 
 def test_oregan_dfn_lumped_processes():

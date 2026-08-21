@@ -15,14 +15,14 @@ dependencies = [
   "pandas>=2.2",
   "pydantic>=2.7",
   "PyYAML>=6.0",
-  "pybamm>=26.0",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.2", "ruff>=0.6"]
+pybamm = ["pybamm>=26.0"]
 comsol = ["MPh>=1.2"]
 ml = ["scikit-learn>=1.5", "scipy>=1.11"]
-all = ["MPh>=1.2", "scikit-learn>=1.5", "scipy>=1.11", "pytest>=8.2", "ruff>=0.6"]
+all = ["pybamm>=26.0", "MPh>=1.2", "scikit-learn>=1.5", "scipy>=1.11", "pytest>=8.2", "ruff>=0.6"]
 
 [project.scripts]
 battery-lab = "battery_lab.cli:main"

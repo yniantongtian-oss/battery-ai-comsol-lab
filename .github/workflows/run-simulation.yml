@@ -1,0 +1,41 @@
+name: Run battery simulation
+
+on:
+  workflow_dispatch:
+    inputs:
+      baseline:
+        description: Baseline configuration
+        required: true
+        default: lgm50_electrothermal_baseline
+        type: choice
+        options:
+          - lfp_graphite_baseline
+          - nmc_graphite_baseline
+          - lgm50_electrothermal_baseline
+          - ageing_okane2022
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install simulation stack
+        run: python -m pip install -e ".[pybamm]"
+      - name: Diagnose installation
+        run: battery-lab doctor
+      - name: Validate repository configs
+        run: battery-lab validate-configs configs
+      - name: Run selected baseline
+        run: >-
+          battery-lab simulate
+          --config configs/${{ inputs.baseline }}.yaml
+          --out runs/${{ inputs.baseline }}
+      - name: Upload simulation outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.baseline }}-results
+          path: runs/${{ inputs.baseline }}/

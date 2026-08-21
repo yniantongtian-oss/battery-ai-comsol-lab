@@ -60,29 +60,41 @@ The parameter sets are research references, not specifications for any commercia
 
 ## Install
 
-Python 3.11+ is recommended.
+PyBaMM currently supports Python 3.10-3.14. Python 3.11, 3.12, or 3.13 is a good default for this repository.
+
+### Windows PowerShell
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -U pip
+python -m pip install -e ".[pybamm]"
+battery-lab doctor
+```
+
+### Linux / macOS
 
 ```bash
-python -m venv .venv
-# Windows
-.venv\\Scripts\\activate
-# Linux/macOS
+python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -U pip
-pip install -e .[dev]
+python -m pip install -e ".[pybamm]"
+battery-lab doctor
 ```
 
-Optional COMSOL automation:
+For development tools, use `python -m pip install -e ".[dev,pybamm]"`. For COMSOL + ML + development dependencies, use `python -m pip install -e ".[all]"`. A valid local COMSOL installation and license are still required for COMSOL execution.
 
-```bash
-pip install -e .[comsol]
-```
-
-A valid local COMSOL installation and license are required.
+The configuration and data-validation commands do not require PyBaMM, so `python -m pip install -e .` is enough if you only want the lightweight tooling.
 
 ## Quick start
 
-Validate all repository configs:
+Check the installation first:
+
+```bash
+battery-lab doctor
+```
+
+Validate every repository configuration. The command automatically distinguishes simulation, sweep, and pack configs:
 
 ```bash
 battery-lab validate-configs configs
@@ -91,29 +103,31 @@ battery-lab validate-configs configs
 Run a PyBaMM baseline:
 
 ```bash
-battery-lab simulate \
-  --config configs/lgm50_electrothermal_baseline.yaml \
-  --out runs/lgm50_baseline
+battery-lab simulate --config configs/lgm50_electrothermal_baseline.yaml --out runs/lgm50_baseline
 ```
 
 Run a parameter sweep:
 
 ```bash
-battery-lab sweep \
-  --config configs/lgm50_crate_temperature_sweep.yaml
+battery-lab sweep --config configs/lgm50_crate_temperature_sweep.yaml
 ```
 
-Create safe synthetic/demo data for pipeline testing:
+Create safe synthetic/demo data and validate it:
 
 ```bash
 python scripts/generate_demo_data.py --out data/processed/demo_cycle.csv
-```
-
-Validate a dataset:
-
-```bash
 battery-lab validate-data data/processed/demo_cycle.csv
 ```
+
+You can also run the CLI without the installed console script:
+
+```bash
+python -m battery_lab --help
+```
+
+### Run directly on GitHub
+
+Open **Actions -> Run battery simulation -> Run workflow**, choose a baseline, and GitHub will install PyBaMM, run the model, and upload `timeseries.csv` plus `manifest.json` as a downloadable workflow artifact. No local COMSOL installation is needed for PyBaMM runs.
 
 ## Research output contract
 

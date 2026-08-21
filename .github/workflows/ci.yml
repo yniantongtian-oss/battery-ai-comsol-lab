@@ -32,3 +32,6 @@ jobs:
           battery-lab simulate
           --config configs/lfp_graphite_baseline.yaml
           --out runs/ci-lfp-smoke
+      - name: Cross-baseline and sweep runtime smoke
+        if: matrix.python-version == '3.12'
+        run: python scripts/smoke_runtime.py

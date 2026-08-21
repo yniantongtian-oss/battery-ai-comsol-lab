@@ -1,0 +1,39 @@
+name: bootstrap-repository
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".bootstrap/**"
+      - ".github/workflows/bootstrap.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reconstruct repository payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .bootstrap/payload.part00 .bootstrap/payload.part01 .bootstrap/payload.part02 .bootstrap/payload.part03 > /tmp/repository.tar.gz.b64
+          base64 -d /tmp/repository.tar.gz.b64 > /tmp/repository.tar.gz
+          echo "63a68310b0fd9e38116284c706334fa0cd124481d22982f7bc371614b4c94015  /tmp/repository.tar.gz" | sha256sum -c -
+          tar -xzf /tmp/repository.tar.gz -C .
+          rm -rf .bootstrap
+          rm -f .github/workflows/bootstrap.yml
+      - name: Commit complete research repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Import complete battery AI and COMSOL research lab"
+          git push origin HEAD:main

@@ -12,7 +12,7 @@ class RidgeSurrogate:
         self.alpha = float(alpha)
         self.coef_: np.ndarray | None = None
 
-    def fit(self, x, y) -> "RidgeSurrogate":
+    def fit(self, x, y) -> RidgeSurrogate:
         x_arr = np.asarray(x, dtype=float)
         y_arr = np.asarray(y, dtype=float)
         if x_arr.ndim != 2:

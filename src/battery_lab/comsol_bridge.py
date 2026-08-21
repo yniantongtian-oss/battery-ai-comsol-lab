@@ -16,7 +16,7 @@ class ComsolSession:
             import mph
         except ImportError as exc:
             raise ComsolUnavailableError(
-                "Install the optional dependency with `pip install -e .[comsol]` "
+                'Install the optional dependency with `python -m pip install -e ".[comsol]"` '
                 "and ensure COMSOL is installed and licensed locally."
             ) from exc
         self._mph = mph

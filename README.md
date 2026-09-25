@@ -181,3 +181,24 @@ The safety track focuses on simulation, detection, prevention, containment, and 
 ## Status
 
 `v0.1.0` — complete research architecture + runnable PyBaMM pipeline + COMSOL adapter + data contracts + BMS/digital-twin primitives + CI.
+
+## Phase B/C validation track
+
+The repository now carries an explicit target-cell evidence contract at `configs/target_cell_lgm50_reference.yaml`. It deliberately distinguishes **required** evidence from **available/validated** evidence so missing experiments cannot be silently replaced by synthetic values.
+
+Validate the Phase-B target definition with:
+
+```bash
+python scripts/validate_target_cell.py configs/target_cell_lgm50_reference.yaml --root .
+```
+
+For Phase C, the human-readable 3D model contract is in `comsol/model_cards/lgm50_3d_electrothermal_v0.md`. A local COMSOL installation can execute a matching `.mph` through `comsol/scripts/run_lgm50_3d.py`; CI does **not** claim a COMSOL solve when the licensed runtime is absent.
+
+After exporting a COMSOL time series, compare it with PyBaMM or experiment data using:
+
+```bash
+python scripts/cross_validate_pybamm_comsol.py \\
+  --reference runs/lgm50_baseline/timeseries.csv \\
+  --candidate comsol/exports/lgm50_3d_electrothermal_v0.csv \\
+  --out runs/cross_validation/lgm50_3d_report.json
+```

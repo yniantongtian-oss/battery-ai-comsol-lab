@@ -3,11 +3,17 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from battery_lab.target_cell import evidence_readiness, load_target_cell_spec, validate_target_cell_spec
+from battery_lab.target_cell import (
+    evidence_readiness,
+    load_target_cell_spec,
+    validate_target_cell_spec,
+)
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate a Phase-B target-cell evidence definition.")
+    parser = argparse.ArgumentParser(
+        description="Validate a Phase-B target-cell evidence definition."
+    )
     parser.add_argument("spec")
     parser.add_argument("--root", default=".")
     args = parser.parse_args()

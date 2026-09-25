@@ -3,7 +3,10 @@ from pathlib import Path
 import pandas as pd
 
 from battery_lab.cross_validation import compare_result_tables
-from battery_lab.target_cell import load_target_cell_spec, validate_target_cell_spec
+from battery_lab.target_cell import (
+    load_target_cell_spec,
+    validate_target_cell_spec,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]

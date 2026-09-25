@@ -13,7 +13,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Compare COMSOL exports against a trusted reference time series."
     )
-    parser.add_argument("--reference", required=True, help="Reference CSV, typically PyBaMM or experiment")
+    parser.add_argument(
+        "--reference",
+        required=True,
+        help="Reference CSV, typically PyBaMM or experiment",
+    )
     parser.add_argument("--candidate", required=True, help="Candidate CSV, typically COMSOL export")
     parser.add_argument("--out", required=True, help="JSON report path")
     parser.add_argument(

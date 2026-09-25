@@ -1,0 +1,49 @@
+target_id: lg_m50_reference
+cell_revision: public_reference_v1
+chemistry: graphite_NMC811
+form_factor: cylindrical_21700
+parameter_set: ORegan2022
+reference_simulation: configs/lgm50_electrothermal_baseline.yaml
+
+evidence:
+  datasheet:
+    status: required
+    path: null
+    sha256: null
+  capacity_reference:
+    status: required
+    path: null
+    sha256: null
+  ocv_soc:
+    status: required
+    path: null
+    sha256: null
+  hppc:
+    status: required
+    path: null
+    sha256: null
+  thermal:
+    status: required
+    path: null
+    sha256: null
+
+protocols:
+  capacity_reference: constant_current_capacity
+  ocv_soc: ocv_soc_characterization
+  hppc: hppc_dynamic
+  thermal: electrothermal_discharge
+
+replicates:
+  minimum_per_condition: 3
+  cell_ids: []
+
+acceptance_thresholds:
+  voltage_rmse_V: null
+  voltage_max_abs_error_V: null
+  temperature_rmse_K: null
+  temperature_max_abs_error_K: null
+
+notes: >
+  Phase-B target definition. Thresholds remain null until they are justified
+  from instrument capability, experimental repeatability, and the scientific
+  question. Do not silently substitute generic acceptance limits.

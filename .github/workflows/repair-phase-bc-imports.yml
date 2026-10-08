@@ -1,0 +1,33 @@
+name: Repair Phase B-C style
+on:
+  push:
+    branches: [phase-bc-validation-2026-09]
+    paths:
+      - .github/workflows/repair-phase-bc-imports.yml
+permissions:
+  contents: write
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install formatter
+        run: python -m pip install "ruff==0.16.9"
+      - name: Fix imports deterministically
+        run: |
+          ruff check --select I --fix tests/test_phase_b_c.py
+          ruff check --select I tests/test_phase_b_c.py
+      - name: Record style fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- tests/test_phase_b_c.py; then
+            git add tests/test_phase_b_c.py
+            git commit -m "style: normalize Phase B-C imports"
+            git push origin HEAD:phase-bc-validation-2026-09
+          fi

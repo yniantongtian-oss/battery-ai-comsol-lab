@@ -36,3 +36,12 @@ def test_cross_validation_marks_missing_signal_without_fabricating_values():
     candidate = pd.DataFrame({"time_s": [0.0, 1.0], "voltage_V": [4.0, 3.9]})
     report = compare_result_tables(reference, candidate)
     assert report["signals"]["temperature_K"]["status"] == "missing"
+
+
+def test_target_cell_uses_evidence_validator_in_repository_checks() -> None:
+    from battery_lab.config import detect_config_kind, validate_config_file
+
+    path = ROOT / "configs" / "target_cell_lgm50_reference.yaml"
+    spec = load_target_cell_spec(path)
+    assert detect_config_kind(spec) == "target-cell"
+    assert validate_config_file(path) == []

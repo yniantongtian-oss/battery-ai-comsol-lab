@@ -7,11 +7,13 @@ from .schema import load_yaml
 
 VALID_MODELS = {"SPM", "SPMe", "DFN"}
 VALID_THERMAL = {"isothermal", "lumped", "x-lumped", "x-full"}
-CONFIG_KINDS = {"simulation", "sweep", "pack"}
+CONFIG_KINDS = {"simulation", "sweep", "pack", "target-cell"}
 
 
 def detect_config_kind(config: dict[str, Any]) -> str:
     """Infer the repository configuration type from its top-level keys."""
+    if "target_id" in config or ("evidence" in config and "reference_simulation" in config):
+        return "target-cell"
     if "base_config" in config and (
         "c_rates" in config or "ambient_temperatures_K" in config
     ):
@@ -152,6 +154,11 @@ def validate_pack_config(
 
 def validate_config(config: dict[str, Any], config_path: str | Path | None = None) -> list[str]:
     kind = detect_config_kind(config)
+    if kind == "target-cell":
+        from .target_cell import validate_target_cell_spec
+
+        root = Path(config_path).resolve().parent.parent if config_path is not None else None
+        return validate_target_cell_spec(config, root=root)
     if kind == "sweep":
         return validate_sweep_config(config, config_path)
     if kind == "pack":

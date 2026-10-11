@@ -14,13 +14,9 @@ def detect_config_kind(config: dict[str, Any]) -> str:
     """Infer the repository configuration type from its top-level keys."""
     if "target_id" in config or ("evidence" in config and "reference_simulation" in config):
         return "target-cell"
-    if "base_config" in config and (
-        "c_rates" in config or "ambient_temperatures_K" in config
-    ):
+    if "base_config" in config and ("c_rates" in config or "ambient_temperatures_K" in config):
         return "sweep"
-    if "cell_config" in config and (
-        "series_cells" in config or "parallel_cells" in config
-    ):
+    if "cell_config" in config and ("series_cells" in config or "parallel_cells" in config):
         return "pack"
     return "simulation"
 

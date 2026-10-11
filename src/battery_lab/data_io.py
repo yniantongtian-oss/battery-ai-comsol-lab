@@ -19,19 +19,27 @@ def validate_timeseries(frame: pd.DataFrame) -> list[str]:
         errors.append("dataset is empty")
         return errors
 
-    time = frame["time_s"].to_numpy(dtype=float)
-    if np.any(~np.isfinite(time)):
-        errors.append("time_s contains non-finite values")
+    values: dict[str, np.ndarray] = {}
+    for column in REQUIRED_TIMESERIES_COLUMNS:
+        try:
+            array = frame[column].to_numpy(dtype=float)
+        except (ValueError, TypeError):
+            errors.append(f"{column} contains non-numeric values")
+            continue
+        values[column] = array
+        if np.any(~np.isfinite(array)):
+            errors.append(f"{column} contains non-finite values")
+
+    time = values.get("time_s", np.array([]))
     if np.any(np.diff(time) < 0):
         errors.append("time_s must be monotonically non-decreasing")
 
-    voltage = frame["voltage_V"].to_numpy(dtype=float)
-    if np.any(~np.isfinite(voltage)):
-        errors.append("voltage_V contains non-finite values")
-    if np.nanmin(voltage) < -1 or np.nanmax(voltage) > 10:
+    voltage = values.get("voltage_V", np.array([]))
+    finite_voltage = voltage[np.isfinite(voltage)]
+    if finite_voltage.size and (np.min(finite_voltage) < -1 or np.max(finite_voltage) > 10):
         errors.append("voltage_V contains values outside broad Li-ion sanity bounds")
 
-    temperature = frame["temperature_K"].to_numpy(dtype=float)
+    temperature = values.get("temperature_K", np.array([]))
     finite_temperature = temperature[np.isfinite(temperature)]
     if finite_temperature.size and (
         np.nanmin(finite_temperature) < 150 or np.nanmax(finite_temperature) > 500

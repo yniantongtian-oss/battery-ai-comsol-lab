@@ -15,9 +15,7 @@ _REQUIRED_EVIDENCE = (
 _ALLOWED_STATUS = {"required", "available", "validated"}
 
 
-def validate_target_cell_spec(
-    spec: dict[str, Any], *, root: str | Path | None = None
-) -> list[str]:
+def validate_target_cell_spec(spec: dict[str, Any], *, root: str | Path | None = None) -> list[str]:
     """Validate a Phase-B target-cell definition without inventing missing evidence."""
     errors: list[str] = []
     for key in (
@@ -52,9 +50,7 @@ def validate_target_cell_spec(
             continue
         status = item.get("status")
         if status not in _ALLOWED_STATUS:
-            errors.append(
-                f"evidence.{name}.status must be one of {sorted(_ALLOWED_STATUS)}"
-            )
+            errors.append(f"evidence.{name}.status must be one of {sorted(_ALLOWED_STATUS)}")
         if status in {"available", "validated"}:
             path = item.get("path")
             digest = item.get("sha256")
@@ -110,6 +106,5 @@ def load_target_cell_spec(path: str | Path) -> dict[str, Any]:
 def evidence_readiness(spec: dict[str, Any]) -> dict[str, str]:
     evidence = spec.get("evidence", {})
     return {
-        name: str(evidence.get(name, {}).get("status", "missing"))
-        for name in _REQUIRED_EVIDENCE
+        name: str(evidence.get(name, {}).get("status", "missing")) for name in _REQUIRED_EVIDENCE
     }

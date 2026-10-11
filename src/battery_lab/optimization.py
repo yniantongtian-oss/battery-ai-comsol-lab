@@ -13,9 +13,7 @@ def pareto_mask(objectives, minimize: bool = True) -> np.ndarray:
     for i, point in enumerate(data):
         if not keep[i]:
             continue
-        dominated_by_other = np.any(
-            np.all(data <= point, axis=1) & np.any(data < point, axis=1)
-        )
+        dominated_by_other = np.any(np.all(data <= point, axis=1) & np.any(data < point, axis=1))
         if dominated_by_other:
             keep[i] = False
     return keep

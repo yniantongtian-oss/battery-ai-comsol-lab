@@ -1,0 +1,18 @@
+{
+  "modules": [
+    "battery_lab",
+    "battery_lab.ecm",
+    "battery_lab.cli"
+  ],
+  "cli": "battery-lab",
+  "extras": "",
+  "commands": [
+    [
+      "--help"
+    ],
+    [
+      "validate-configs",
+      "{root}/configs"
+    ]
+  ]
+}

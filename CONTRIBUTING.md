@@ -26,7 +26,8 @@ Then:
 2. Add or update tests.
 3. Run `ruff check src tests scripts`.
 4. Run `python scripts/check_repository.py`.
-5. Run `battery-lab validate-configs configs`.
+5. Run `battery-lab validate-configs configs` and `battery-lab validate-configs specs`.
 6. Run `pytest`.
-7. Keep configurations declarative; do not bury research parameters in scripts.
-8. Keep notebooks exploratory. Production analysis belongs in `src/` or `scripts/`.
+7. For a spec change, run `battery-lab run-spec --spec <file> --dry-run --json`.
+8. Keep configurations declarative; do not bury research parameters in scripts.
+9. Keep notebooks exploratory. Production analysis belongs in `src/` or `scripts/`.

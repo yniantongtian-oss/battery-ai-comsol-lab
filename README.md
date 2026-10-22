@@ -24,6 +24,7 @@ The project is designed around one rule: every result should be traceable from r
 ```text
 .
 ├── configs/                 # Reproducible model and sweep configurations
+├── specs/                   # Agent YAML specs for solves and benchmarks
 ├── data/                    # Data contracts and local data folders
 ├── docs/                    # Research program and modeling specifications
 ├── experiments/             # Experiment metadata/templates
@@ -60,7 +61,7 @@ The parameter sets are research references, not specifications for any commercia
 
 ## Install
 
-PyBaMM currently supports Python 3.10-3.14. Python 3.11, 3.12, or 3.13 is a good default for this repository.
+PyBaMM 26.10 supports Python 3.10-3.15 and requires NumPy 2. Python 3.11, 3.12, or 3.13 is a good default for this repository.
 
 ### Windows PowerShell
 
@@ -125,6 +126,52 @@ You can also run the CLI without the installed console script:
 python -m battery_lab --help
 ```
 
+### Agent spec runner
+
+`battery-lab run-spec` reads one YAML spec and prints a JSON envelope. A dry run resolves the config without PyBaMM. COMSOL is not involved.
+
+```bash
+battery-lab run-spec --spec specs/lfp_short_discharge.yaml --dry-run --json
+battery-lab run-spec --spec specs/lfp_short_discharge.yaml --json
+```
+
+`specs/lfp_short_discharge.yaml` points at the LFP baseline and shortens it:
+
+```yaml
+api_version: battery-lab/spec/v1
+kind: simulation
+name: lfp-short-discharge
+output_dir: runs/lfp-short-discharge
+base_config: configs/lfp_graphite_baseline.yaml
+overrides:
+  model: SPM
+  max_duration_s: 60
+  output_points: 12
+```
+
+The same command runs the physics-informed surrogate benchmark. It needs no PyBaMM and no COMSOL:
+
+```bash
+battery-lab benchmark --spec specs/surrogate_benchmark.yaml --json
+```
+
+The benchmark splits by protocol, fits a grey-box Thevenin model with a fixed Arrhenius prior, and compares it with a standardized ridge on time, current, and ambient temperature. `runs/surrogate-benchmark/benchmark_report.json` records RMSE, MAE, max-abs error, physics-residual fractions, dataset SHA-256 hashes, and the threshold verdict. Two runs with the same spec write the same report.
+
+### MCP
+
+`battery-lab mcp` speaks JSON-RPC over stdio with `Content-Length` framing. Tools: `validate_spec`, `run_spec`, `doctor`, and `list_configs`.
+
+```json
+{
+  "mcpServers": {
+    "battery-lab": {
+      "command": "battery-lab",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
 ### Run directly on GitHub
 
 Open **Actions -> Run battery simulation -> Run workflow**, choose a baseline, and GitHub will install PyBaMM, run the model, and upload `timeseries.csv` plus `manifest.json` as a downloadable workflow artifact. No local COMSOL installation is needed for PyBaMM runs.
@@ -180,7 +227,7 @@ The safety track focuses on simulation, detection, prevention, containment, and 
 
 ## Status
 
-`v0.1.0` — complete research architecture + runnable PyBaMM pipeline + COMSOL adapter + data contracts + BMS/digital-twin primitives + CI.
+`v0.2.0` — PyBaMM 26.10 stack, stricter numeric validation, reproducible physics-informed surrogate benchmark, and a YAML spec runner with a stdio MCP server. COMSOL remains an optional local runtime; the test suite does not start it.
 
 ## Phase B/C validation track
 

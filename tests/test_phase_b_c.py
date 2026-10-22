@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from battery_lab.cross_validation import compare_result_tables
 from battery_lab.target_cell import load_target_cell_spec, validate_target_cell_spec
@@ -29,6 +30,13 @@ def test_cross_validation_returns_zero_for_identical_series():
         assert metrics["rmse"] == 0.0
         assert metrics["mae"] == 0.0
         assert metrics["max_abs_error"] == 0.0
+
+
+def test_cross_validation_requires_overlapping_time():
+    reference = pd.DataFrame({"time_s": [0.0, 1.0], "voltage_V": [4.0, 3.9]})
+    candidate = pd.DataFrame({"time_s": [5.0, 6.0], "voltage_V": [4.0, 3.9]})
+    with pytest.raises(ValueError, match="overlap"):
+        compare_result_tables(reference, candidate, signals=["voltage_V"])
 
 
 def test_cross_validation_marks_missing_signal_without_fabricating_values():

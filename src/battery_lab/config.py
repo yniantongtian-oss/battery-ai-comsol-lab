@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from .numbers import finite_float, strict_int
 from .schema import load_yaml
 
 VALID_MODELS = {"SPM", "SPMe", "DFN"}
@@ -12,6 +13,9 @@ CONFIG_KINDS = {"simulation", "sweep", "pack", "target-cell"}
 
 def detect_config_kind(config: dict[str, Any]) -> str:
     """Infer the repository configuration type from its top-level keys."""
+    api_version = config.get("api_version")
+    if isinstance(api_version, str) and api_version.startswith("battery-lab/spec/"):
+        return "spec"
     if "target_id" in config or ("evidence" in config and "reference_simulation" in config):
         return "target-cell"
     if "base_config" in config and ("c_rates" in config or "ambient_temperatures_K" in config):
@@ -40,40 +44,48 @@ def validate_simulation_config(config: dict[str, Any]) -> list[str]:
     if thermal not in VALID_THERMAL:
         errors.append(f"unsupported thermal option: {thermal}")
 
-    try:
-        c_rate = float(config.get("c_rate", 1.0))
-        if c_rate <= 0:
-            errors.append("c_rate must be > 0")
-    except (TypeError, ValueError):
-        errors.append("c_rate must be numeric")
-
-    try:
-        temperature = float(config.get("ambient_temperature_K", 298.15))
-        if not 150 <= temperature <= 500:
-            errors.append("ambient_temperature_K outside supported range")
-    except (TypeError, ValueError):
-        errors.append("ambient_temperature_K must be numeric")
-
-    try:
-        initial_soc = float(config.get("initial_soc", 1.0))
-        if not 0 <= initial_soc <= 1:
-            errors.append("initial_soc must be between 0 and 1")
-    except (TypeError, ValueError):
-        errors.append("initial_soc must be numeric")
-
-    try:
-        duration = float(config.get("max_duration_s", 7200))
-        if duration <= 0:
-            errors.append("max_duration_s must be > 0")
-    except (TypeError, ValueError):
-        errors.append("max_duration_s must be numeric")
-
-    try:
-        output_points = int(config.get("output_points", 500))
-        if output_points < 2:
-            errors.append("output_points must be >= 2")
-    except (TypeError, ValueError):
-        errors.append("output_points must be an integer")
+    _check_range(
+        config,
+        "c_rate",
+        1.0,
+        errors,
+        lambda value: value > 0,
+        "c_rate must be a finite number > 0",
+    )
+    _check_range(
+        config,
+        "ambient_temperature_K",
+        298.15,
+        errors,
+        lambda value: 150 <= value <= 500,
+        "ambient_temperature_K must be a finite number between 150 and 500",
+    )
+    _check_range(
+        config,
+        "initial_soc",
+        1.0,
+        errors,
+        lambda value: 0 <= value <= 1,
+        "initial_soc must be a finite number between 0 and 1",
+    )
+    _check_range(
+        config,
+        "max_duration_s",
+        7200,
+        errors,
+        lambda value: value > 0,
+        "max_duration_s must be a finite number > 0",
+    )
+    if "output_points" not in config:
+        output_points = 500
+    else:
+        try:
+            output_points = strict_int(config["output_points"])
+        except ValueError:
+            errors.append("output_points must be an integer >= 2")
+            output_points = None
+    if output_points is not None and output_points < 2:
+        errors.append("output_points must be an integer >= 2")
 
     return errors
 
@@ -100,9 +112,9 @@ def validate_sweep_config(
             continue
         for value in values:
             try:
-                number = float(value)
-            except (TypeError, ValueError):
-                errors.append(f"{key} contains a non-numeric value: {value!r}")
+                number = finite_float(value)
+            except ValueError:
+                errors.append(f"{key} contains a non-finite or non-numeric value: {value!r}")
                 continue
             if key == "c_rates" and number <= 0:
                 errors.append("c_rates values must be > 0")
@@ -128,28 +140,32 @@ def validate_pack_config(
 
     for key in ("series_cells", "parallel_cells"):
         try:
-            value = int(config.get(key, 0))
+            value = strict_int(config.get(key, 0))
             if value <= 0:
                 errors.append(f"{key} must be a positive integer")
-        except (TypeError, ValueError):
+        except ValueError:
             errors.append(f"{key} must be a positive integer")
 
     for key in ("initial_soc_mean", "initial_soc_std"):
         if key not in config:
             continue
         try:
-            value = float(config[key])
+            value = finite_float(config[key])
             if key == "initial_soc_mean" and not 0 <= value <= 1:
-                errors.append("initial_soc_mean must be between 0 and 1")
+                errors.append("initial_soc_mean must be a finite number between 0 and 1")
             if key == "initial_soc_std" and value < 0:
-                errors.append("initial_soc_std must be >= 0")
-        except (TypeError, ValueError):
-            errors.append(f"{key} must be numeric")
+                errors.append("initial_soc_std must be a finite number >= 0")
+        except ValueError:
+            errors.append(f"{key} must be a finite number")
     return errors
 
 
 def validate_config(config: dict[str, Any], config_path: str | Path | None = None) -> list[str]:
     kind = detect_config_kind(config)
+    if kind == "spec":
+        from .spec import validate_spec
+
+        return validate_spec(config, config_path)
     if kind == "target-cell":
         from .target_cell import validate_target_cell_spec
 
@@ -165,3 +181,14 @@ def validate_config(config: dict[str, Any], config_path: str | Path | None = Non
 def validate_config_file(path: str | Path) -> list[str]:
     path = Path(path)
     return validate_config(load_yaml(path), path)
+
+
+def _check_range(config, key, default, errors, predicate, message) -> None:
+    raw = config.get(key, default)
+    try:
+        value = finite_float(raw)
+    except ValueError:
+        errors.append(message)
+        return
+    if not predicate(value):
+        errors.append(message)

@@ -10,7 +10,7 @@ doctor:
 	battery-lab doctor
 
 test:
-	pytest
+	pytest --cov=battery_lab --cov-report=term-missing --cov-fail-under=90
 
 lint:
 	ruff check src tests scripts
@@ -18,6 +18,7 @@ lint:
 check: lint test
 	python scripts/check_repository.py
 	battery-lab validate-configs configs
+	battery-lab validate-configs specs
 
 demo:
 	python scripts/generate_demo_data.py --out data/processed/demo_cycle.csv

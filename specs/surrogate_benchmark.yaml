@@ -1,0 +1,32 @@
+api_version: battery-lab/spec/v1
+kind: surrogate-benchmark
+name: thevenin-grey-box-v1
+output_dir: runs/surrogate-benchmark
+seed: 42
+notes: >
+  Protocol-split benchmark. Nominal capacity and the Arrhenius prior are fixed.
+  Resistances, open-circuit voltage, time constant, and thermal parameters are
+  identified. COMSOL is not used.
+benchmark:
+  sample_dt_s: 10
+  soc_start: 1.0
+  soc_stop: 0.05
+  voltage_noise_std_V: 0.002
+  temperature_noise_std_K: 0.05
+  ridge_alpha: 0.0001
+  tau_min_s: 20
+  tau_max_s: 90
+  tau_count: 29
+  train_protocols:
+    - {c_rate: 0.5, ambient_temperature_K: 298.15}
+    - {c_rate: 0.5, ambient_temperature_K: 313.15}
+    - {c_rate: 1.0, ambient_temperature_K: 298.15}
+    - {c_rate: 1.0, ambient_temperature_K: 313.15}
+  test_protocols:
+    - {c_rate: 2.0, ambient_temperature_K: 298.15}
+    - {c_rate: 1.0, ambient_temperature_K: 283.15}
+    - {c_rate: 2.0, ambient_temperature_K: 283.15}
+  thresholds:
+    physics_test_voltage_rmse_V: 0.01
+    thermal_rollout_rmse_K: 0.25
+    minimum_rmse_ratio_black_box_over_physics: 10

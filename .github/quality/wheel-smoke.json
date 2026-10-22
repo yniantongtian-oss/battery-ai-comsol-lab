@@ -2,7 +2,11 @@
   "modules": [
     "battery_lab",
     "battery_lab.ecm",
-    "battery_lab.cli"
+    "battery_lab.cli",
+    "battery_lab.spec",
+    "battery_lab.benchmark",
+    "battery_lab.mcp",
+    "battery_lab.surrogate"
   ],
   "cli": "battery-lab",
   "extras": "",
@@ -13,6 +17,17 @@
     [
       "validate-configs",
       "{root}/configs"
+    ],
+    [
+      "validate-configs",
+      "{root}/specs"
+    ],
+    [
+      "run-spec",
+      "--spec",
+      "{root}/specs/surrogate_benchmark.yaml",
+      "--dry-run",
+      "--json"
     ]
   ]
 }

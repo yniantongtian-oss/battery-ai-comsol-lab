@@ -5,13 +5,16 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-from .pybamm_runner import run
+from .config import validate_simulation_config, validate_sweep_config
 from .schema import load_yaml
 
 
 def run_sweep(sweep_config_path: str | Path) -> Path:
     sweep_config_path = Path(sweep_config_path)
     sweep = load_yaml(sweep_config_path)
+    errors = validate_sweep_config(sweep, sweep_config_path)
+    if errors:
+        raise ValueError("Invalid sweep configuration: " + "; ".join(errors))
 
     base_path = Path(str(sweep["base_config"]))
     if not base_path.is_absolute():
@@ -32,6 +35,14 @@ def run_sweep(sweep_config_path: str | Path) -> Path:
             config = dict(base)
             config["c_rate"] = c_rate
             config["ambient_temperature_K"] = temperature_K
+            config_errors = validate_simulation_config(config)
+            if config_errors:
+                raise ValueError(
+                    f"Invalid sweep point {c_rate:g} C / {temperature_K:g} K: "
+                    + "; ".join(config_errors)
+                )
+            from .pybamm_runner import run
+
             config_path = run_dir / "config.yaml"
             config_path.write_text(yaml.safe_dump(config, sort_keys=False), encoding="utf-8")
 

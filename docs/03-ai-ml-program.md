@@ -29,3 +29,5 @@ Report absolute metrics, normalized metrics, calibration/uncertainty where relev
 ## Physics-informed methods
 
 PINNs and neural operators are research tracks, not default replacements for trusted solvers. Demonstrate a clear advantage in speed, inverse problems, sparse observations or differentiability.
+
+The repository baseline is `specs/surrogate_benchmark.yaml`. It generates a rested Thevenin-plus-lumped-thermal plant, holds out whole protocols, and compares a grey-box identifier against a standardized ridge. Nominal capacity and activation energy are literature priors. The report records prediction error, Ohmic-sign violations, thermal rollout error, and dataset hashes.

@@ -50,11 +50,11 @@ def thevenin_step(
     )
     if not all(np.isfinite(value) for value in values):
         raise ValueError("Thevenin inputs must be finite")
+    if dt_s < 0:
+        raise ValueError("dt_s must be non-negative")
     if params.r0_ohm < 0 or params.r1_ohm <= 0 or params.c1_F <= 0:
         raise ValueError("r0_ohm must be non-negative; r1_ohm and c1_F must be positive")
     tau = params.r1_ohm * params.c1_F
-    if tau <= 0:
-        raise ValueError("r1_ohm * c1_F must be positive")
     decay = float(np.exp(-dt_s / tau))
     v_rc = decay * state.v_rc + params.r1_ohm * (1.0 - decay) * current_A
     soc = coulomb_count(state.soc, current_A, dt_s, params.capacity_Ah)

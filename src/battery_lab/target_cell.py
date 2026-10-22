@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from .numbers import finite_float, strict_int
 from .schema import load_yaml
 
 _REQUIRED_EVIDENCE = (
@@ -77,7 +78,7 @@ def validate_target_cell_spec(spec: dict[str, Any], *, root: str | Path | None =
 
     replicates = spec.get("replicates", {})
     try:
-        minimum = int(replicates.get("minimum_per_condition", 0))
+        minimum = strict_int(replicates.get("minimum_per_condition", 0))
         if minimum < 1:
             errors.append("replicates.minimum_per_condition must be >= 1")
     except (AttributeError, TypeError, ValueError):
@@ -91,7 +92,8 @@ def validate_target_cell_spec(spec: dict[str, Any], *, root: str | Path | None =
             if value is None:
                 continue
             try:
-                if float(value) <= 0:
+                number = finite_float(value)
+                if number <= 0:
                     errors.append(f"acceptance_thresholds.{name} must be > 0 or null")
             except (TypeError, ValueError):
                 errors.append(f"acceptance_thresholds.{name} must be numeric or null")

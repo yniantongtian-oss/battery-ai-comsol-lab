@@ -33,7 +33,7 @@
 - ageing experiment registry
 - competing degradation mechanisms
 - SOH/RUL baselines
-- surrogate dataset generation
+- surrogate dataset generation (`specs/surrogate_benchmark.yaml`, v0.2.0)
 - active learning and UQ
 
 ## Phase E — BMS / digital twin / pack

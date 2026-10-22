@@ -13,10 +13,11 @@ from battery_lab.config import validate_config_file  # noqa: E402
 
 def main() -> None:
     failures = []
-    for path in sorted((ROOT / "configs").glob("*.yaml")):
-        errors = validate_config_file(path)
-        if errors:
-            failures.append((path, errors))
+    for folder in ("configs", "specs"):
+        for path in sorted((ROOT / folder).glob("*.yaml")):
+            errors = validate_config_file(path)
+            if errors:
+                failures.append((path, errors))
     if failures:
         for path, errors in failures:
             print(path.relative_to(ROOT), errors)

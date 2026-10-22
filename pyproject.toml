@@ -4,25 +4,34 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "battery-ai-comsol-lab"
-version = "0.1.0"
+version = "0.2.0"
 description = "Reproducible battery electrochemistry, COMSOL multiphysics, AI/ML, BMS and digital-twin research toolkit"
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{name = "Battery AI + COMSOL Lab Contributors"}]
 dependencies = [
-  "numpy>=1.26",
+  "numpy>=2.0",
   "pandas>=2.2",
-  "pydantic>=2.7",
-  "PyYAML>=6.0",
+  "pydantic>=2.10",
+  "PyYAML>=6.0.2",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.2", "ruff>=0.6"]
-pybamm = ["pybamm>=26.0"]
-comsol = ["MPh>=1.2"]
-ml = ["scikit-learn>=1.5", "scipy>=1.11"]
-all = ["pybamm>=26.0", "MPh>=1.2", "scikit-learn>=1.5", "scipy>=1.11", "pytest>=8.2", "ruff>=0.6"]
+dev = ["pytest>=8.3", "pytest-cov>=6", "ruff>=0.9"]
+pybamm = ["pybamm>=26.10.1"]
+comsol = ["MPh>=1.4"]
+ml = ["scikit-learn>=1.6", "scipy>=1.11.4,!=1.18.0"]
+all = [
+  "pybamm>=26.10.1",
+  "MPh>=1.4",
+  "scikit-learn>=1.6",
+  "scipy>=1.11.4,!=1.18.0",
+  "pytest>=8.3",
+  "pytest-cov>=6",
+  "ruff>=0.9",
+]
 
 [project.scripts]
 battery-lab = "battery_lab.cli:main"
@@ -33,6 +42,9 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+
+[tool.coverage.run]
+omit = ["src/battery_lab/__main__.py"]
 
 [tool.ruff]
 line-length = 100

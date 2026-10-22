@@ -1,0 +1,12 @@
+api_version: battery-lab/spec/v1
+kind: simulation
+name: lfp-short-discharge
+output_dir: runs/lfp-short-discharge
+base_config: configs/lfp_graphite_baseline.yaml
+overrides:
+  model: SPM
+  max_duration_s: 60
+  output_points: 12
+notes: >
+  Short LFP/graphite discharge for agents and smoke tests. The base file remains
+  the traceable electrochemical baseline; these overrides only shorten the solve.

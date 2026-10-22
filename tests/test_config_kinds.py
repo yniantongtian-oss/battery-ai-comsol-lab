@@ -12,6 +12,8 @@ def test_detects_simulation_sweep_and_pack_configs():
     sweep = load_yaml(ROOT / "configs/lgm50_crate_temperature_sweep.yaml")
     assert detect_config_kind(sweep) == "sweep"
     assert detect_config_kind(load_yaml(ROOT / "configs/pack_research_template.yaml")) == "pack"
+    assert detect_config_kind(load_yaml(ROOT / "specs/surrogate_benchmark.yaml")) == "spec"
+    assert detect_config_kind(load_yaml(ROOT / "specs/lfp_short_discharge.yaml")) == "spec"
 
 
 def test_every_repository_config_is_valid():

@@ -23,7 +23,13 @@ class ComsolSession:
         kwargs: dict[str, Any] = {}
         if cores is not None:
             kwargs["cores"] = cores
-        self.client = mph.start(**kwargs)
+        try:
+            self.client = mph.start(**kwargs)
+        except (OSError, RuntimeError) as exc:
+            raise ComsolUnavailableError(
+                "COMSOL is not available in this environment. Install and license COMSOL "
+                "locally; the rest of the lab runs without it."
+            ) from exc
         self.model = None
 
     def open_model(self, path: str | Path) -> None:
@@ -43,20 +49,28 @@ class ComsolSession:
         self._require_model().solve(study_name)
 
     def evaluate(self, expressions: str | list[str], unit: str | None = None):
-        return self._require_model().evaluate(expressions, unit=unit)
+        model = self._require_model()
+        if unit is None:
+            return model.evaluate(expressions)
+        return model.evaluate(expressions, unit=unit)
 
     def save_copy(self, path: str | Path) -> None:
         self._require_model().save(str(Path(path)))
 
     def close_model(self) -> None:
-        if self.model is not None:
-            try:
-                self.client.remove(self.model)
-            finally:
-                self.model = None
+        if self.model is None:
+            return
+        try:
+            self.client.remove(self.model)
+        finally:
+            self.model = None
+
+    def close(self) -> None:
+        """Remove this session's model. The shared COMSOL client is left running."""
+        self.close_model()
 
     def __enter__(self) -> ComsolSession:
         return self
 
     def __exit__(self, exc_type, exc, tb) -> None:
-        self.close_model()
+        self.close()

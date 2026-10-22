@@ -33,9 +33,11 @@ jobs:
       - name: Repository checks
         run: python scripts/check_repository.py
       - name: CLI validation
-        run: battery-lab validate-configs configs
+        run: |
+          battery-lab validate-configs configs
+          battery-lab validate-configs specs
       - name: Tests
-        run: pytest
+        run: pytest --cov=battery_lab --cov-report=term-missing --cov-fail-under=90
       - name: Short real PyBaMM solve
         run: >-
           battery-lab simulate
